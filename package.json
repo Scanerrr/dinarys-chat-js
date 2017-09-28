@@ -1,0 +1,32 @@
+{
+  "name": "Dinarys-Chat-JS",
+  "version": "1.0.0",
+  "description": "Inner frame communication in JS",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scanerrr/dinarys-chat-js.git"
+  },
+  "keywords": [],
+  "author": "Scanerrr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Scanerrr/dinarys-chat-js/issues"
+  },
+  "homepage": "https://github.com/Scanerrr/dinarys-chat-js#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.8",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-cache": "^0.4.6",
+    "gulp-imagemin": "^3.1.1",
+    "gulp-pug": "^3.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^3.0.0",
+    "gulp-uncss": "^1.0.6"
+  }
+}
