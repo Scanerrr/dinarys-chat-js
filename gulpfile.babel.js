@@ -1,13 +1,14 @@
 var gulp = require('gulp'),
-  sass = require('gulp-sass'),
-  pug = require('gulp-pug'),
-  autoprefixer = require('gulp-autoprefixer'),
-  uncss = require('gulp-uncss'),
-  uglify = require('gulp-uglify'),
-  rename = require('gulp-rename'),
-  imagemin = require('gulp-imagemin'),
-  cache = require('gulp-cache'),
-  browserSync = require('browser-sync');
+    sass = require('gulp-sass'),
+    pug = require('gulp-pug'),
+    autoprefixer = require('gulp-autoprefixer'),
+    uncss = require('gulp-uncss'),
+    rename = require('gulp-rename'),
+    imagemin = require('gulp-imagemin'),
+    cache = require('gulp-cache'),
+    babel = require('gulp-babel'),
+    util = require('gulp-util'),
+    connect = require('gulp-connect');
 
 var settings = {
   publicDir: "",
@@ -28,7 +29,7 @@ gulp.task('pug', function () {
 						basedir: __dirname
         }))
         .pipe(gulp.dest(settings.publicDir))
-        .pipe(browserSync.reload({stream: true}));
+        .pipe(connect.reload());
 });
 
 // SASS
@@ -36,7 +37,6 @@ gulp.task('sass', function () {
   return gulp.src(settings.sassDir + "/*.sass")
     .pipe(sass({
       includePath: [settings.sassDir],
-      onError: browserSync.notify,
       outputStyle: 'compressed'
     })
       .on('error', sass.logError))
@@ -46,16 +46,25 @@ gulp.task('sass', function () {
     }))
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest(settings.cssDir))
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(connect.reload());
 });
 
 // Scripts
 gulp.task('scripts', function () {
   return gulp.src(settings.jsDir + '/*.js')
     .pipe(rename({ suffix: '.min' }))
-    .pipe(uglify())
+    .pipe(babel({
+            presets: ['env', 'es2015']
+      }).on('error', function(err) {
+          util.log(util.colors.red('[Compilation Error]'));
+          util.log(err.fileName + ( err.loc ? `( ${err.loc.line}, ${err.loc.column} ): ` : ': '));
+          util.log(util.colors.red('error Babel: ' + err.message + '\n'));
+          util.log(err.codeFrame);
+          this.emit('end');
+        }))
+        // , 'minify' add above
     .pipe(gulp.dest(settings.minJsDir))
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(connect.reload());
 });
 
 // Images
@@ -70,19 +79,14 @@ gulp.task('images', function() {
       }
     )))
     .pipe(gulp.dest(settings.imgDir))
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(connect.reload());
 });
 
-
-// Browser Sync
-gulp.task('browser-sync', ['sass', 'pug', 'scripts', 'images'], function () {
-  browserSync({
-    server: {
-      baseDir: settings.publicDir
-    },
-    notify: false
-  });
-});
+gulp.task('connect', function () {
+  connect.server({
+    livereload: true
+  })
+})
 
 // Watch
 gulp.task('watch', function () {
@@ -93,4 +97,4 @@ gulp.task('watch', function () {
 });
 
 //default
-gulp.task('default', ['browser-sync', 'watch']);
+gulp.task('default', ['connect', 'watch']);

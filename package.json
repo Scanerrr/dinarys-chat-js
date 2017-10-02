@@ -18,15 +18,19 @@
   },
   "homepage": "https://github.com/Scanerrr/dinarys-chat-js#readme",
   "devDependencies": {
-    "browser-sync": "^2.18.8",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.24.1",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
+    "gulp-babel": "^7.0.0",
+    "gulp-babel-minify": "^0.2.0",
     "gulp-cache": "^0.4.6",
+    "gulp-connect": "^5.0.0",
     "gulp-imagemin": "^3.1.1",
     "gulp-pug": "^3.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
-    "gulp-uglify": "^3.0.0",
     "gulp-uncss": "^1.0.6"
   }
 }
