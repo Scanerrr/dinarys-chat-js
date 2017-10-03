@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     cache = require('gulp-cache'),
     babel = require('gulp-babel'),
+    minify = require("gulp-babel-minify"),
     util = require('gulp-util'),
     connect = require('gulp-connect');
 
@@ -39,11 +40,17 @@ gulp.task('sass', function () {
       includePath: [settings.sassDir],
       outputStyle: 'compressed'
     })
-      .on('error', sass.logError))
+    .on('error', function(err) {
+        util.log(util.colors.red('[Compilation Error]'));
+        util.log(err.fileName + ( err.loc ? `( ${err.loc.line}, ${err.loc.column} ): ` : ': '));
+        util.log(util.colors.red('error SASS: ' + err.message + '\n'));
+        util.log(err.codeFrame);
+        this.emit('end');
+      }))
     .pipe(autoprefixer(['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'], {cascade: true}))
-    .pipe(uncss({
-      html: ['index.html']
-    }))
+    // .pipe(uncss({
+    //   html: ['index.html', 'iframe-template.html']
+    // }))
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest(settings.cssDir))
     .pipe(connect.reload());
@@ -54,7 +61,9 @@ gulp.task('scripts', function () {
   return gulp.src(settings.jsDir + '/*.js')
     .pipe(rename({ suffix: '.min' }))
     .pipe(babel({
-            presets: ['env', 'es2015']
+            presets: ['es2015', 'env', ["minify", {
+              "mangle": false
+            }]]
       }).on('error', function(err) {
           util.log(util.colors.red('[Compilation Error]'));
           util.log(err.fileName + ( err.loc ? `( ${err.loc.line}, ${err.loc.column} ): ` : ': '));
@@ -62,7 +71,6 @@ gulp.task('scripts', function () {
           util.log(err.codeFrame);
           this.emit('end');
         }))
-        // , 'minify' add above
     .pipe(gulp.dest(settings.minJsDir))
     .pipe(connect.reload());
 });

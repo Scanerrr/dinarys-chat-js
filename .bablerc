@@ -1,3 +1,6 @@
 {
-  "presets": ["es2015", "minify", "env"]
+  "presets": ["es2015", "env", ["minify", {
+    "mangle": false
+  }]
+  ]
 }

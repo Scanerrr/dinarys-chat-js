@@ -1,0 +1,27 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf8')
+    script(src="assets/js/min/load-styles.min.js")
+  body
+    nav
+      .nav-wrapper.teal
+        span.brand-logo.center.header iframe
+    .message-history#message-history
+      .message
+        span 
+        span 
+
+    .row
+      .input-field.col.s12.send-div
+        
+        input(
+          type='text'
+          name='message'
+          id='message-text'
+          autocomplete='off'
+        )
+        label(for='message-text' id='message-text-label') Write a message
+        i.material-icons.prefix.send-btn#send-message send
+
+    script(src="assets/js/min/frame-template.min.js")

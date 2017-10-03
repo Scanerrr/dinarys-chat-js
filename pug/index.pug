@@ -4,11 +4,17 @@ html(lang='en')
     meta(charset='utf8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title Chat
+    //- Import Google Icon Font
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+    //- Import materialize
+    link(rel='stylesheet', href='assets/lib/meterialize/css/materialize.min.css', media='screen,projection')
+    //- stylesheet 
     link(rel='stylesheet', href='assets/css/app.min.css')
   body
     include layouts/header.pug
     include layouts/content.pug
-    include layouts/footer.pug
 
-
+    script(src="assets/lib/interact.min.js")
     script(src="assets/js/min/script.min.js")
+    script(src="assets/js/min/draggable.min.js")
+       

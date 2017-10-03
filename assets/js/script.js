@@ -1,6 +1,6 @@
 const iFrameTemplate = 'iframe-template'
-const iFrameWidth = 240 //pixels
-const iFrameHeight = 240  //pixels
+const iFrameWidth = 410 //pixels
+const iFrameHeight = 500  //pixels
 
 const load = () => {
   const addBtn = document.getElementById('add-frame')
@@ -9,6 +9,7 @@ const load = () => {
   // add frame on screen
   addBtn.addEventListener('click', (e) => {
     e.preventDefault()
+    document.querySelector('.manual').style.display = 'none'
     const iFrame = createIFrame()
     // end if no iframe found
     if (!frameIsSet(iFrame)) return;
@@ -16,8 +17,38 @@ const load = () => {
     isLoaded(iFrame, () => {
       setupIFrame(iFrame)
       window.addEventListener("message", receiveMessage, false)
+      setJoiningMessage(iFrame)
     })
   })
+
+  // set messege when iframe added
+  const setJoiningMessage = (iFrame) => {
+    const frames = window.frames
+    const frameName = iFrame.contentWindow.frames.name
+    for (let i = 0; i < frames.length; i++) {
+      if (frameName === frames[i].name) return;
+      const frameDoc = frames[i].document
+
+      const newMessageDiv = frameDoc.createElement('div')
+      newMessageDiv.className = 'message'
+
+      const messageSpan = frameDoc.createElement('span')
+      messageSpan.className = 'system-text'
+      const newMessageText = frameDoc.createTextNode('iframe ' + framesCount + ' joined to the conversation')
+      messageSpan.appendChild(newMessageText)
+
+      const hostSpan = frameDoc.createElement('span')
+      const newMessageHost = frameDoc.createTextNode('[system]: ')
+      hostSpan.className = 'system-host'
+      hostSpan.appendChild(newMessageHost)
+
+      newMessageDiv.appendChild(hostSpan)
+      newMessageDiv.appendChild(messageSpan)
+
+      const messageHistoryDiv = frameDoc.getElementById('message-history')
+      messageHistoryDiv.appendChild(newMessageDiv)
+    }
+  }
 
   // receive message from the iframe
   const receiveMessage = (event) => {
@@ -34,7 +65,7 @@ const load = () => {
     iFrame.style.height = iFrameHeight + 'px'
     framesCount++
     iFrame.setAttribute('name', 'frame-' + framesCount)
-
+    iFrame.setAttribute('class', 'draggable')
     return document.body.appendChild(iFrame)
   }
 
@@ -48,14 +79,8 @@ const load = () => {
   // setup iframe
   const setupIFrame = (iFrame) => {
     const frameDoc = iFrame.contentDocument
-    const header = frameDoc.querySelector('h1.header')
+    const header = frameDoc.querySelector('.header')
     header.innerHTML = header.innerHTML + ' ' + framesCount
-    // set joining message
-    const messageHistory = frameDoc.querySelectorAll('.message span')
-    const host = messageHistory[0]
-    const message = messageHistory[1]
-    host.innerHTML = '[system]: '
-    message.innerHTML = 'iframe ' + framesCount + ' joined the conversation'
     // get message history
     if (!localStorage.getItem('chat-history')) return;
     const chatHistory = JSON.parse(localStorage.getItem('chat-history'))
@@ -68,6 +93,7 @@ const load = () => {
     chatHistory.forEach((value) => {
       insert(frameDoc, value.sender, value.message)
     })
+
   }
 
   // sending data to iFrames
@@ -84,21 +110,38 @@ const load = () => {
   // arrange inserting new message
   const insertNewMessage = (frameWin, message, senderName) => {
     const frameDoc = frameWin.document
-    insert(frameDoc, senderName, message)
+    if (frameWin.frames.name === senderName)
+      insert(frameDoc, senderName, message, true)
+    else insert(frameDoc, senderName, message)
+    frameWin.scrollTo(frameDoc.body.scrollTop, frameDoc.body.scrollHeight)
   }
 
   // insert message template
-  const insert = (frameDoc, senderName, message) => {
+  const insert = (frameDoc, senderName, message, isSender = null) => {
     const newMessageDiv = frameDoc.createElement('div')
-    const hostSpan = frameDoc.createElement('span')
+    const mesageBlock = frameDoc.createElement('blockquote')
+    mesageBlock.className = 'sender'
+
     const messageSpan = frameDoc.createElement('span')
+    messageSpan.className = 'sender-text'
     newMessageDiv.className = 'message'
-    const newMessageHost = frameDoc.createTextNode('[' + senderName + ']: ')
-    hostSpan.appendChild(newMessageHost)
-    newMessageDiv.appendChild(hostSpan)
+
     const newMessageText = frameDoc.createTextNode(message)
     messageSpan.appendChild(newMessageText)
-    newMessageDiv.appendChild(messageSpan)
+    // messageSpan.appendChild(newMessageText)
+    // if sender is set then don't insert its name
+    if (isSender) {
+      mesageBlock.className += ' sender-right'
+    } else {
+      const newMessageHost = frameDoc.createTextNode('[' + senderName + ']')
+      const hostSpan = frameDoc.createElement('span')
+      hostSpan.className = 'sender-name'
+      hostSpan.appendChild(newMessageHost)
+      mesageBlock.appendChild(hostSpan)
+    }
+    mesageBlock.appendChild(messageSpan)
+    newMessageDiv.appendChild(mesageBlock)
+    // newMessageDiv.appendChild(messageSpan)
     const messageHistoryDiv = frameDoc.getElementById('message-history')
     messageHistoryDiv.appendChild(newMessageDiv)
   }
@@ -131,5 +174,22 @@ window.onload = load
 // clear localstorage
 const clearStorage = () => {
   localStorage.removeItem('chat-history')
+  localStorage.removeItem('styles')
 }
-clearStorage()
+
+// store stylesheets
+const storeStyles = () => {
+  clearStorage()
+  const loadedStyles = document.styleSheets
+  if (!localStorage.getItem('styles'))
+    localStorage.setItem('styles', JSON.stringify([]))
+  const styles = JSON.parse(localStorage.getItem('styles'))
+  for (let i = 0; i < loadedStyles.length; i++) {
+    const styleToStore = {
+      'href': loadedStyles[i].href
+    }
+    styles.push(styleToStore)
+  }
+  localStorage.setItem('styles', JSON.stringify(styles))
+}
+storeStyles()

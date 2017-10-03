@@ -1,0 +1,65 @@
+blockquote
+  margin: 5px 0
+  &.sender
+    padding-left: 10px
+
+    &-right
+      border-left: none
+      border-right: 5px solid $green
+      text-align: right
+      padding-right: 10px
+
+      .sender-text
+        padding-left: 10%
+        padding-right: 0
+  .sender-text
+    padding-right: 10%
+    font-size: 16px
+
+.sender
+  &-name, &-text
+    font-weight: 500
+    font-size: 14px
+    display: block
+  &-text
+    font-weight: normal
+
+.message-history
+  &:first-of-type
+    font-size: 13px
+    font-weight: 300
+    .message
+      padding: 5px
+.send
+  &-btn
+    right: 0
+    color: $blue
+    cursor: pointer
+    user-select: none
+    &:active
+      color: darken($blue, 30%)
+    &:hover
+      color: lighten($blue, 10%)
+  &-div
+    position: absolute
+    bottom: 0
+.input-field label
+  height: auto
+
+.btn-add
+  position: fixed
+  bottom: 50px
+  right: 50px
+
+.system
+  &-host
+    display: inline-block
+    font-weight: normal
+    padding-right: 10px
+  &-text
+    font-size: 14px
+    display: inline-block
+.manual
+  ul
+    font-family: monospace
+    font-size: 16px
