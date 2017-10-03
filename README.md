@@ -8,3 +8,5 @@ Test Task: Inner frame communication in JS
 # Local Install
 1. Clone the repo `git clone https://github.com/Scanerrr/dinarys-chat-js.git`
 2. Inside the directory `npm install`
+3. `gulp`
+  Copy server name from terminal and paste it in browser.
