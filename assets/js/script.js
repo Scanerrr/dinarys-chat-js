@@ -185,6 +185,7 @@ const storeStyles = () => {
     localStorage.setItem('styles', JSON.stringify([]))
   const styles = JSON.parse(localStorage.getItem('styles'))
   for (let i = 0; i < loadedStyles.length; i++) {
+    if (!loadedStyles[i]) continue;
     const styleToStore = {
       'href': loadedStyles[i].href
     }
